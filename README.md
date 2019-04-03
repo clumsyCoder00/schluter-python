@@ -1,7 +1,7 @@
 # schluter-python
 A homeassistant integration for [Schluter][] wifi thermostat (Schluter®-DITRA-HEAT-E-WiFi).
 
-Integrate with HASS by placing climate.py in custom_components/schluter folder.
+Integrate with HASS by placing climate.py in 'custom_components/schluter' folder.
 
 Include the following entry in configuration.yaml
 
