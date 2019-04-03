@@ -18,7 +18,7 @@ Include the following entry in configuration.yaml
 - move schluter functions to separate file
 - make async
 - implement aiohttp
-- make object oriented
+- make (more) object oriented
 - account for multiple thermostats
 
 [home-assistant]: https://github.com/home-assistant/home-assistant
