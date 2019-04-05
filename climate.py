@@ -30,18 +30,15 @@ from homeassistant.components.climate.const import (
     DOMAIN,
     STATE_HEAT,
     STATE_IDLE,
-    ATTR_TARGET_TEMP_HIGH,
-    ATTR_TARGET_TEMP_LOW,
+    STATE_AUTO,
+    STATE_MANUAL,
     SUPPORT_TARGET_TEMPERATURE,
     SUPPORT_OPERATION_MODE,
     SUPPORT_AWAY_MODE,
-    SUPPORT_HOLD_MODE,
-    STATE_AUTO,
-    STATE_MANUAL
+    SUPPORT_HOLD_MODE
     )
 from homeassistant.const import (
-    ATTR_TEMPERATURE, TEMP_CELSIUS, TEMP_FAHRENHEIT,
-    CONF_SCAN_INTERVAL, STATE_ON, STATE_OFF, PRECISION_HALVES,
+    ATTR_TEMPERATURE, TEMP_CELSIUS, TEMP_FAHRENHEIT, PRECISION_HALVES,
     PRECISION_TENTHS, PRECISION_WHOLE)
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 import homeassistant.helpers.config_validation as cv
@@ -106,7 +103,7 @@ class SchluterThermostat(ClimateDevice):
         self._thermostat_data = None
         
         # is this a platform or thermostat instance. This should be in the platform instance?
-        self._session_id = self._get_session_id(self._email, self._password)
+        self._get_session_id(self._email, self._password, self._session_id)
         self._serial = self._get_thermostat_serial(self._session_id)
         self.update()
 
@@ -212,16 +209,22 @@ class SchluterThermostat(ClimateDevice):
         """Return the current hold mode, e.g., home, away, temp."""
         return self._hold
         
-    def _get_session_id(self, email, password):
+    def _get_session_id(self, email, password, session_id):
         """Get Session ID"""
-        login_url = 'https://ditra-heat-e-wifi.schluter.com/api/authenticate/user'
-        authenticate_payload = {
-          "Email":email,
-          "Password":password,
-          "Application":'7'
-          }
-        result = requests.post(login_url, data = authenticate_payload)
-        return result.json().get('SessionId')
+        request_url = 'https://ditra-heat-e-wifi.schluter.com/api/thermostats'
+        params = {'sessionid': session_id}
+        result = requests.get(request_url, params=params)
+        
+        if result.ok == False:
+            _LOGGER.warning("renewing session_id")
+            login_url = 'https://ditra-heat-e-wifi.schluter.com/api/authenticate/user'
+            authenticate_payload = {
+              "Email":email,
+              "Password":password,
+              "Application":'7'
+              }
+            result = requests.post(login_url, data = authenticate_payload)
+            self._session_id = result.json().get('SessionId')
 
     def _get_thermostat_serial(self, session_id):
         request_url = 'https://ditra-heat-e-wifi.schluter.com/api/thermostats'
@@ -245,6 +248,7 @@ class SchluterThermostat(ClimateDevice):
           params=params)
       
     def update(self):
+        self._get_session_id(self._email, self._password, self._session_id)
         self._thermostat_data = self._get_thermostat_data(self._session_id, self._serial)
         self._name = self._thermostat_data.json()['Room']
         self._temperature = self._thermostat_data.json()['Temperature'] / 100
