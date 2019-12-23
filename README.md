@@ -2,7 +2,7 @@
 A [home-assistant] integration for [Schluter][] Ditra Heat Floor Warming System Wifi Thermostat
 [Schluter®-DITRA-HEAT-E-WiFi]
 
-Integrate with HASS by placing climate.py in `custom_components/schluter` folder.
+Integrate with HASS by placing climate.py, __init__.py and manifest.json in `custom_components/schluter` folder.
 
 Include the following entry in configuration.yaml
 
@@ -12,7 +12,7 @@ Include the following entry in configuration.yaml
         password: <schluter login password>
         
         (optional)
-        precision: 0.5
+        precision: 1.0, 0.5 or 0.1
 
 # Current Limitations
   Only the first thermostat assigned to a group will be recognized by this integration.
