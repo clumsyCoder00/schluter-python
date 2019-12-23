@@ -10,6 +10,9 @@ Include the following entry in configuration.yaml
       - platform: schluter
         email: <schluter login email>
         password: <schluter login password>
+        
+        (optional)
+        precision: 0.5
 
 # Current Limitations
   Only the first thermostat assigned to a group will be recognized by this integration.
