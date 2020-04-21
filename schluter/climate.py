@@ -96,7 +96,8 @@ class SchluterThermostat(ClimateDevice):
         self._session_id = None
         self._serial = None
         self._thermostat_data = None
-    
+        self._comfort_end_time = None
+        
         # is this a platform or thermostat instance. This should be in the platform instance?
         self._get_session_id(self._email, self._password, self._session_id)
         self._serial = self._get_thermostat_serial(self._session_id)
@@ -192,7 +193,7 @@ class SchluterThermostat(ClimateDevice):
             self._hvac_mode = HVAC_MODE_HEAT
             self._set_termostat_data(self._session_id, self._serial, {
                 'ComfortTemperature': str(int(round(self._temperature*100,0))),
-                'RegulationMode': 2})
+                'RegulationMode': 2, 'VacationEnabled': False})
         elif hvac_mode == HVAC_MODE_OFF:
             self._hvac_mode = HVAC_MODE_OFF
             self._set_termostat_data(self._session_id, self._serial, {
@@ -206,8 +207,10 @@ class SchluterThermostat(ClimateDevice):
             return
         self._target_temp = temperature
         self._set_termostat_data(self._session_id, self._serial, {
+            'ComfortEndTime': self._comfort_end_time,
             'ComfortTemperature': str(int(round(temperature*100,0))),
-            'RegulationMode': 2})
+            'RegulationMode': 2, 
+            'VacationEnabled': False})
         
     @property
     def min_temp(self):
@@ -287,6 +290,8 @@ class SchluterThermostat(ClimateDevice):
             self._min_temperature = self._thermostat_data.json()['MinTemp'] / 100
             self._max_temperature = self._thermostat_data.json()['MaxTemp'] / 100
 
+            self._comfort_end_time = self._thermostat_data.json()['ComfortEndTime']
+            
             if self._thermostat_data.json()['RegulationMode'] == 1:
                self._preset_mode = PRESET_SCHEDULE
                self._hvac_mode = HVAC_MODE_AUTO
