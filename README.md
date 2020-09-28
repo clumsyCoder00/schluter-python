@@ -1,3 +1,5 @@
+# THIS INTEGRATION IS NOW DEPRICATED IN FAVOR OF THE OFFICIAL HOMEASSISTANT INTEGRATION OVER HERE: https://www.home-assistant.io/integrations/schluter/
+
 # schluter-python
 A [home-assistant] integration for [Schluter][] Ditra Heat Floor Warming System Wifi Thermostat
 [Schluter®-DITRA-HEAT-E-WiFi]
